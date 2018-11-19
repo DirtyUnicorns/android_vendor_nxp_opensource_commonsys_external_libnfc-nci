@@ -2578,7 +2578,7 @@ void nfa_hci_handle_pending_host_reset() {
     DLOG_IF(INFO, nfc_debug_enabled) << StringPrintf("nfa_hci_handle_pending_host_reset");
     for(xx = 0; xx < NFA_HCI_MAX_HOST_IN_NETWORK; xx++) {
       if(nfa_hci_cb.reset_host[xx].reset_cfg & NFCEE_INIT_COMPLETED) {
-        nfa_hciu_clear_host_resetting(nfa_hci_cb.curr_nfcee, NFCEE_INIT_COMPLETED);
+        //nfa_hciu_clear_host_resetting(nfa_hci_cb.curr_nfcee, NFCEE_INIT_COMPLETED);
         tNFA_HCI_EVT_DATA             evt_data;
         evt_data.status  = NFA_STATUS_OK;
         evt_data.rcvd_evt.evt_code = NFA_HCI_EVT_INIT_COMPLETED;
@@ -2623,7 +2623,9 @@ bool nfa_hci_check_set_apdu_pipe_ready_for_next_host ()
 
     for(xx = 0; xx < NFA_HCI_MAX_HOST_IN_NETWORK; xx++) {
         p_host = &nfa_hci_cb.cfg.host[xx];
-        if (nfa_hci_cb.curr_nfcee == p_host->host_id) {
+        uint8_t nfcee = nfa_hciu_get_hci_host_id(nfa_hci_cb.curr_nfcee);
+        LOG(ERROR) << StringPrintf("after updating uicc id%x", nfcee);
+        if (nfcee == p_host->host_id) {
             nfa_hciu_clear_host_resetting(p_host->host_id, NFCEE_HCI_NOTIFY_ALL_PIPE_CLEARED);
             if(p_host->host_id == NFA_HCI_FIRST_PROP_HOST)
               nfa_hci_api_add_prop_host_info();
@@ -2999,12 +3001,12 @@ static void nfa_hci_handle_apdu_app_gate_hcp_msg_data (uint8_t *p_data, uint16_t
 static bool nfa_hci_api_send_apdu (tNFA_HCI_EVENT_DATA *p_evt_data)
 {
     uint8_t                       pipe_id= 0;;
-    uint8_t                       evt_code;
+    uint8_t                       evt_code = 0x00;
     uint32_t                      max_wait_time = NFA_HCI_EVT_SW_PROC_LATENCY;
     tNFC_STATUS                 status = NFA_STATUS_FAILED;
     tNFA_HCI_EVT_DATA           evt_data;
     tNFA_HCI_DYN_PIPE           *p_pipe;
-    tNFA_HCI_PIPE_STATE         pipe_state;
+    tNFA_HCI_PIPE_STATE         pipe_state = NFA_HCI_INVALID_PIPE;
     tNFA_HCI_API_SEND_APDU_EVT  *p_send_apdu = (tNFA_HCI_API_SEND_APDU_EVT*)&p_evt_data->send_evt;
     tNFA_HCI_PIPE_CMDRSP_INFO   *p_pipe_cmdrsp_info = NULL;
     tNFA_HCI_APDU_PIPE_REG_INFO *p_apdu_pipe_reg_info = NULL;
@@ -3149,7 +3151,7 @@ static bool nfa_hci_api_abort_apdu (tNFA_HCI_EVENT_DATA *p_evt_data)
     bool                        host_reseting = FALSE;
     tNFA_HCI_EVT_DATA           evt_data;
     tNFA_HCI_DYN_PIPE           *p_pipe;
-    tNFA_HCI_PIPE_STATE         pipe_state;
+    tNFA_HCI_PIPE_STATE         pipe_state = NFA_HCI_INVALID_PIPE;
     tNFA_HCI_EVENT_DATA         *p_queue_evt_data;
     tNFA_HCI_API_ABORT_APDU_EVT  *p_abort_apdu = &p_evt_data->abort_apdu;
     tNFA_HCI_PIPE_CMDRSP_INFO   *p_pipe_cmdrsp_info = NULL;
