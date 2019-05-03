@@ -74,6 +74,14 @@ namespace V1_0 {
 struct INqNfc;
 } } } } }
 
+namespace vendor {
+namespace nxp {
+namespace hardware {
+namespace nfc {
+namespace V1_1 {
+struct INqNfc;
+} } } } }
+
 /*
  * Uncomment define ENABLE_ESE_CLIENT to
  * enable eSE client
@@ -156,6 +164,7 @@ class NfcAdaptation {
   static android::sp<android::hardware::nfc::V1_1::INfc> mHal_1_1;
   static android::sp<android::hardware::nfc::V1_2::INfc> mHal_1_2;
   static android::sp<vendor::nxp::hardware::nfc::V1_0::INqNfc> mNqHal;
+  static android::sp<vendor::nxp::hardware::nfc::V1_1::INqNfc> mNqHal_1_1;
   static android::hardware::nfc::V1_1::INfcClientCallback* mCallback;
   sp<NfcDeathRecipient> mNfcHalDeathRecipient;
 #if (NXP_EXTNS == TRUE)
