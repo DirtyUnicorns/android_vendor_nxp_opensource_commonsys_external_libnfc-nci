@@ -15,7 +15,25 @@
  *  limitations under the License.
  *
  ******************************************************************************/
-
+/******************************************************************************
+ *
+ *  The original Work has been changed by NXP.
+ *
+ *  Copyright 2019 NXP
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *
+ ******************************************************************************/
 #ifndef NFC_TARGET_H
 #define NFC_TARGET_H
 
@@ -341,6 +359,11 @@
 #define RW_I93_FLAG_DATA_RATE I93_FLAG_DATA_RATE_HIGH
 #endif
 
+/* RW Mifare Classic Tag timeout for each API call, in ms */
+#ifndef RW_MFC_TOUT_RESP
+#define RW_MFC_TOUT_RESP 300
+#endif
+
 /* TRUE, to include Card Emulation related test commands */
 #ifndef CE_TEST_INCLUDED
 #define CE_TEST_INCLUDED FALSE
@@ -434,7 +457,7 @@
 /* Response Waiting Time */
 #ifndef LLCP_WAITING_TIME
 /* its scaled value should be less than LTO */
-#define LLCP_WAITING_TIME 7
+#define LLCP_WAITING_TIME 8
 #endif
 
 /* Options Parameters */
@@ -518,7 +541,7 @@
 #ifndef NFA_EE_MAX_AID_ENTRIES
 #define NFA_EE_MIN_AID_SIZE (5)
 #define NFA_EE_MIN_AID_ENTRY_SIZE (NFA_EE_MIN_AID_SIZE + 4)
-#define NFA_EE_MAX_AID_ENTRIES (50)
+#define NFA_EE_MAX_AID_ENTRIES (51)
 #endif
 #endif
 

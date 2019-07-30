@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- *  Copyright (C) 2012 Broadcom Corporation
+ *  Copyright 2019 Google, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,14 +15,7 @@
  *  limitations under the License.
  *
  ******************************************************************************/
-#include "bt_types.h"
 
-const uint8_t nfca_version_string[] = "NFCDROID-AOSP_M_00.01";
+#pragma once
 
-/*
-// The following string should be manually updated to contain the
-// label of the NFA version being used (see stack-info.txt).
-//
-// NOTE: IF additional branches are used add a "+" at the end of the string
-*/
-const uint8_t nfa_version_string[] = "NFA_PI_1.03.66+";
+enum ErrorType { UNKNOWN, NCI_TIMEOUT, ERROR_NTF, AID_OVERFLOW };

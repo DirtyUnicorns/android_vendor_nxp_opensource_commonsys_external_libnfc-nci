@@ -42,7 +42,7 @@ const uint8_t nfa_dm_ce_cfg[] = {
 
 uint8_t* p_nfa_dm_ce_cfg = (uint8_t*)nfa_dm_ce_cfg;
 
-uint8_t* p_nfa_dm_gen_cfg = NULL;
+uint8_t* p_nfa_dm_gen_cfg = nullptr;
 
 /* the RF Discovery Frequency for each technology */
 const tNFA_DM_DISC_FREQ_CFG nfa_dm_rf_disc_freq_cfg = {
@@ -63,7 +63,7 @@ tNFA_DM_DISC_FREQ_CFG* p_nfa_dm_rf_disc_freq_cfg =
 uint8_t nfa_ee_max_ee_cfg = NFA_EE_MAX_EE_SUPPORTED;
 
 /* set to NULL to use the default mapping set by stack */
-tNCI_DISCOVER_MAPS* p_nfa_dm_interface_mapping = NULL;
+tNCI_DISCOVER_MAPS* p_nfa_dm_interface_mapping = nullptr;
 uint8_t nfa_dm_num_dm_interface_mapping = 0;
 
 tNFA_DM_CFG nfa_dm_cfg = {
@@ -83,14 +83,14 @@ tNFA_DM_CFG* p_nfa_dm_cfg = (tNFA_DM_CFG*)&nfa_dm_cfg;
 const uint8_t nfa_hci_whitelist[] = {0x02, 0x03, 0x04};
 
 tNFA_HCI_CFG nfa_hci_cfg = {
-    /* Max HCI Network IDLE time to wait for EE DISC REQ Ntf(s) */
-    NFA_HCI_NETWK_INIT_IDLE_TIMEOUT,
-    /* Maximum HCP Response time to any HCP Command */
-    NFA_HCI_RESPONSE_TIMEOUT,
 #if (NXP_EXTNS == TRUE)
     /* infinite wait for HCI reponse as lon as wtx is received */
     0x00,
 #endif
+    /* Max HCI Network IDLE time to wait for EE DISC REQ Ntf(s) */
+    NFA_HCI_NETWK_INIT_IDLE_TIMEOUT,
+    /* Maximum HCP Response time to any HCP Command */
+    NFA_HCI_RESPONSE_TIMEOUT,
     /* Number of host in the whitelist of Terminal host */
     0x03,
     /* Pointer to the Whitelist of Terminal Host */
