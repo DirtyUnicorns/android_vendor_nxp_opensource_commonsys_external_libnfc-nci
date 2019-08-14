@@ -51,7 +51,7 @@ namespace {
 std::string findConfigPath() {
   const vector<string> search_path = {"/odm/etc/", "/vendor/etc/",
                                       "/product/etc/", "/etc/"};
-  const string file_name = "libnfc-nci.conf";
+  const string file_name = "libnfc-nci_SN100.conf";
 
   for (string path : search_path) {
     path.append(file_name);
