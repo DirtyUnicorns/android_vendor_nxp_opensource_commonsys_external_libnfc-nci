@@ -764,8 +764,6 @@ int NfcAdaptation::HalIoctl(long arg, void* p_data) {
             (pInpOutData->inp.data.transitConfig.len));
     data = tempStdVec;
   }
-  if(mNqHal != nullptr)
-      mNqHal->ioctl(arg, data, IoctlCallback);
   DLOG_IF(INFO, nfc_debug_enabled) << StringPrintf("%s Ioctl Completed for Type=%llu", func, (unsigned long long)pInpOutData->out.ioctlType);
   return (pInpOutData->out.result);
 }
