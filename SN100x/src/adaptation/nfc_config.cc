@@ -51,7 +51,7 @@ namespace {
 std::string findConfigPath() {
   const vector<string> search_path = {"/odm/etc/", "/vendor/etc/",
                                       "/product/etc/", "/etc/"};
-  const string file_name = "libnfc-nci.conf";
+  const string file_name = "libnfc-nci_SN100.conf";
 
   for (string path : search_path) {
     path.append(file_name);
@@ -78,6 +78,9 @@ void NfcConfig::loadConfig() {
   NfcAdaptation& theInstance = NfcAdaptation::GetInstance();
   std::map<std::string, ConfigValue> configMap;
   theInstance.GetVendorConfigs(configMap);
+#if(NXP_EXTNS == TRUE)
+  theInstance.GetNxpConfigs(configMap);
+#endif
   for (auto config : configMap) {
     config_.addConfig(config.first, config.second);
   }

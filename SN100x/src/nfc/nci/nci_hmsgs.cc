@@ -15,7 +15,25 @@
  *  limitations under the License.
  *
  ******************************************************************************/
-
+/******************************************************************************
+ *
+ *  The original Work has been changed by NXP.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *  Copyright 2018-2019 NXP
+ *
+ ******************************************************************************/
 /******************************************************************************
  *
  *  This file contains function of the NCI unit to format and send NCI
@@ -44,7 +62,7 @@ uint8_t nci_snd_core_reset(uint8_t reset_type) {
   uint8_t* pp;
 
   p = NCI_GET_CMD_BUF(NCI_CORE_PARAM_SIZE_RESET);
-  if (p == NULL) return (NCI_STATUS_FAILED);
+  if (p == nullptr) return (NCI_STATUS_FAILED);
 
   p->event = BT_EVT_TO_NFC_NCI;
   p->len = NCI_MSG_HDR_SIZE + NCI_CORE_PARAM_SIZE_RESET;
@@ -74,7 +92,7 @@ uint8_t nci_snd_core_init(uint8_t nci_version) {
   NFC_HDR* p;
   uint8_t* pp;
 
-  if ((p = NCI_GET_CMD_BUF(NCI_CORE_PARAM_SIZE_INIT(nci_version))) == NULL)
+  if ((p = NCI_GET_CMD_BUF(NCI_CORE_PARAM_SIZE_INIT(nci_version))) == nullptr)
     return (NCI_STATUS_FAILED);
 
   p->event = BT_EVT_TO_NFC_NCI;
@@ -107,21 +125,46 @@ uint8_t nci_snd_core_init(uint8_t nci_version) {
 uint8_t nci_snd_core_get_config(uint8_t* param_ids, uint8_t num_ids) {
   NFC_HDR* p;
   uint8_t* pp;
-
+#if (NXP_EXTNS == TRUE)
+  uint8_t bytes;
+  uint8_t propConfigCnt;
+#endif
   p = NCI_GET_CMD_BUF(num_ids);
   if (p == NULL) return (NCI_STATUS_FAILED);
-
+#if (NXP_EXTNS == TRUE)
+  uint32_t idx = 0;
+  uint8_t* params = param_ids;
+  propConfigCnt = 0;
+  for (idx = 0; idx < num_ids; idx++) {
+    if (*params == 0xA0) {
+      params++;
+      propConfigCnt++;
+    }
+    params++;
+  }
+  bytes = (num_ids - propConfigCnt) + (propConfigCnt << 1);
+#endif
   p->event = BT_EVT_TO_NFC_NCI;
+#if (NXP_EXTNS == TRUE)
+  p->len = NCI_MSG_HDR_SIZE + bytes + 1;
+#else
   p->len = NCI_MSG_HDR_SIZE + num_ids + 1;
+#endif
   p->offset = NCI_MSG_OFFSET_SIZE;
   p->layer_specific = 0;
   pp = (uint8_t*)(p + 1) + p->offset;
 
   NCI_MSG_BLD_HDR0(pp, NCI_MT_CMD, NCI_GID_CORE);
   NCI_MSG_BLD_HDR1(pp, NCI_MSG_CORE_GET_CONFIG);
+#if (NXP_EXTNS == TRUE)
+  UINT8_TO_STREAM(pp, (uint8_t)(bytes + 1));
+  UINT8_TO_STREAM(pp, num_ids);
+  ARRAY_TO_STREAM(pp, param_ids, bytes);
+#else
   UINT8_TO_STREAM(pp, (uint8_t)(num_ids + 1));
   UINT8_TO_STREAM(pp, num_ids);
   ARRAY_TO_STREAM(pp, param_ids, num_ids);
+#endif
 
   nfc_ncif_send_cmd(p);
   return (NCI_STATUS_OK);
@@ -142,7 +185,7 @@ uint8_t nci_snd_core_set_config(uint8_t* p_param_tlvs, uint8_t tlv_size) {
   uint8_t num = 0, ulen, len, *pt;
 
   p = NCI_GET_CMD_BUF(tlv_size + 1);
-  if (p == NULL) return (NCI_STATUS_FAILED);
+  if (p == nullptr) return (NCI_STATUS_FAILED);
 
   p->event = BT_EVT_TO_NFC_NCI;
   p->len = NCI_MSG_HDR_SIZE + tlv_size + 1;
@@ -191,7 +234,7 @@ uint8_t nci_snd_core_conn_create(uint8_t dest_type, uint8_t num_tlv,
   uint8_t size = NCI_CORE_PARAM_SIZE_CON_CREATE + tlv_size;
 
   p = NCI_GET_CMD_BUF(size);
-  if (p == NULL) return (NCI_STATUS_FAILED);
+  if (p == nullptr) return (NCI_STATUS_FAILED);
 
   p->event = BT_EVT_TO_NFC_NCI;
   p->len = NCI_MSG_HDR_SIZE + NCI_CORE_PARAM_SIZE_CON_CREATE;
@@ -227,7 +270,7 @@ uint8_t nci_snd_core_conn_close(uint8_t conn_id) {
   uint8_t* pp;
 
   p = NCI_GET_CMD_BUF(NCI_CORE_PARAM_SIZE_CON_CLOSE);
-  if (p == NULL) return (NCI_STATUS_FAILED);
+  if (p == nullptr) return (NCI_STATUS_FAILED);
 
   p->event = BT_EVT_TO_NFC_NCI;
   p->len = NCI_MSG_HDR_SIZE + NCI_CORE_PARAM_SIZE_CON_CLOSE;
@@ -261,7 +304,7 @@ uint8_t nci_snd_nfcee_discover(uint8_t discover_action) {
   uint8_t* pp;
 
   p = NCI_GET_CMD_BUF(NCI_PARAM_SIZE_DISCOVER_NFCEE(NFC_GetNCIVersion()));
-  if (p == NULL) return (NCI_STATUS_FAILED);
+  if (p == nullptr) return (NCI_STATUS_FAILED);
 
   p->event = BT_EVT_TO_NFC_NCI;
   p->len =
@@ -295,7 +338,7 @@ uint8_t nci_snd_nfcee_mode_set(uint8_t nfcee_id, uint8_t nfcee_mode) {
   uint8_t* pp;
 
   p = NCI_GET_CMD_BUF(NCI_CORE_PARAM_SIZE_NFCEE_MODE_SET);
-  if (p == NULL) return (NCI_STATUS_FAILED);
+  if (p == nullptr) return (NCI_STATUS_FAILED);
 
   p->event = BT_EVT_TO_NFC_NCI;
   p->len = NCI_MSG_HDR_SIZE + NCI_CORE_PARAM_SIZE_NFCEE_MODE_SET;
@@ -328,7 +371,7 @@ uint8_t nci_snd_iso_dep_nak_presence_check_cmd() {
   NFC_HDR* p;
   uint8_t* pp;
 
-  if ((p = NCI_GET_CMD_BUF(0)) == NULL) return (NCI_STATUS_FAILED);
+  if ((p = NCI_GET_CMD_BUF(0)) == nullptr) return (NCI_STATUS_FAILED);
 
   p->event = BT_EVT_TO_NFC_NCI;
   p->offset = NCI_MSG_OFFSET_SIZE;
@@ -363,7 +406,7 @@ uint8_t nci_snd_discover_cmd(uint8_t num, tNCI_DISCOVER_PARAMS* p_param) {
 
   size = num * sizeof(tNCI_DISCOVER_PARAMS) + 1;
   p = NCI_GET_CMD_BUF(size);
-  if (p == NULL) return (NCI_STATUS_FAILED);
+  if (p == nullptr) return (NCI_STATUS_FAILED);
 
   p->event = BT_EVT_TO_NFC_NCI;
   p->offset = NCI_MSG_OFFSET_SIZE;
@@ -403,7 +446,7 @@ uint8_t nci_snd_discover_select_cmd(uint8_t rf_disc_id, uint8_t protocol,
   uint8_t* pp;
 
   p = NCI_GET_CMD_BUF(NCI_DISCOVER_PARAM_SIZE_SELECT);
-  if (p == NULL) return (NCI_STATUS_FAILED);
+  if (p == nullptr) return (NCI_STATUS_FAILED);
 
   p->event = BT_EVT_TO_NFC_NCI;
   p->len = NCI_MSG_HDR_SIZE + NCI_DISCOVER_PARAM_SIZE_SELECT;
@@ -439,7 +482,7 @@ uint8_t nci_snd_deactivate_cmd(uint8_t de_act_type) {
   nfc_cb.reassembly = true;
 
   p = NCI_GET_CMD_BUF(NCI_DISCOVER_PARAM_SIZE_DEACT);
-  if (p == NULL) return (NCI_STATUS_FAILED);
+  if (p == nullptr) return (NCI_STATUS_FAILED);
 
   p->event = BT_EVT_TO_NFC_NCI;
   p->len = NCI_MSG_HDR_SIZE + NCI_DISCOVER_PARAM_SIZE_DEACT;
@@ -475,7 +518,7 @@ uint8_t nci_snd_discover_map_cmd(uint8_t num, tNCI_DISCOVER_MAPS* p_maps) {
   size = num * sizeof(tNCI_DISCOVER_MAPS) + 1;
 
   p = NCI_GET_CMD_BUF(size);
-  if (p == NULL) return (NCI_STATUS_FAILED);
+  if (p == nullptr) return (NCI_STATUS_FAILED);
 
   p->event = BT_EVT_TO_NFC_NCI;
   p->offset = NCI_MSG_OFFSET_SIZE;
@@ -513,7 +556,7 @@ uint8_t nci_snd_t3t_polling(uint16_t system_code, uint8_t rc, uint8_t tsn) {
   uint8_t* pp;
 
   p = NCI_GET_CMD_BUF(NCI_RF_PARAM_SIZE_T3T_POLLING);
-  if (p == NULL) return (NCI_STATUS_FAILED);
+  if (p == nullptr) return (NCI_STATUS_FAILED);
 
   p->event = BT_EVT_TO_NFC_NCI;
   p->len = NCI_MSG_HDR_SIZE + NCI_RF_PARAM_SIZE_T3T_POLLING;
@@ -548,7 +591,7 @@ uint8_t nci_snd_parameter_update_cmd(uint8_t* p_param_tlvs, uint8_t tlv_size) {
   uint8_t num = 0, ulen, len, *pt;
 
   p = NCI_GET_CMD_BUF(tlv_size + 1);
-  if (p == NULL) return (NCI_STATUS_FAILED);
+  if (p == nullptr) return (NCI_STATUS_FAILED);
 
   p->event = BT_EVT_TO_NFC_NCI;
   p->len = NCI_MSG_HDR_SIZE + tlv_size + 1;
@@ -594,7 +637,7 @@ uint8_t nci_snd_parameter_update_cmd(uint8_t* p_param_tlvs, uint8_t tlv_size) {
 uint8_t nci_snd_nfcee_power_link_control(uint8_t nfcee_id, uint8_t pl_config) {
   uint8_t* pp;
   NFC_HDR* p = NCI_GET_CMD_BUF(NCI_CORE_PARAM_SIZE_NFCEE_PL_CTRL);
-  if (p == NULL) return NCI_STATUS_FAILED;
+  if (p == nullptr) return NCI_STATUS_FAILED;
 
   p->event = NFC_EVT_TO_NFC_NCI;
   p->len = NCI_MSG_HDR_SIZE + NCI_CORE_PARAM_SIZE_NFCEE_PL_CTRL;
@@ -637,7 +680,7 @@ uint8_t nci_snd_set_routing_cmd(bool more, uint8_t num_tlv, uint8_t tlv_size,
   }
 
   p = NCI_GET_CMD_BUF(size);
-  if (p == NULL) return (NCI_STATUS_FAILED);
+  if (p == nullptr) return (NCI_STATUS_FAILED);
 
   p->event = BT_EVT_TO_NFC_NCI;
   p->offset = NCI_MSG_OFFSET_SIZE;
@@ -673,7 +716,7 @@ uint8_t nci_snd_core_set_power_sub_state(uint8_t screen_state) {
   NFC_HDR* p = NCI_GET_CMD_BUF(NCI_CORE_PARAM_SIZE_SET_POWER_SUB_STATE);
   uint8_t* pp;
 
-  if (p == NULL) return (NCI_STATUS_FAILED);
+  if (p == nullptr) return (NCI_STATUS_FAILED);
 
   p->event = BT_EVT_TO_NFC_NCI;
   p->offset = NCI_MSG_OFFSET_SIZE;
@@ -706,7 +749,7 @@ uint8_t nci_snd_get_routing_cmd(void) {
   uint8_t param_size = 0;
 
   p = NCI_GET_CMD_BUF(param_size);
-  if (p == NULL) return (NCI_STATUS_FAILED);
+  if (p == nullptr) return (NCI_STATUS_FAILED);
 
   p->event = BT_EVT_TO_NFC_NCI;
   p->len = NCI_MSG_HDR_SIZE + param_size;

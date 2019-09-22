@@ -31,7 +31,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- *  Copyright 2018 NXP
+ *  Copyright 2018-2019 NXP
  *
  ******************************************************************************/
 /******************************************************************************
@@ -53,11 +53,13 @@
 
 
 #if (NXP_EXTNS == TRUE)
+#define NXP_EN_SN110U    1
 #define NXP_EN_SN100U    1
-#define NXP_ANDROID_VER (9U)        /* NXP android version */
+#define NXP_ANDROID_VER (10U)        /* NXP android version */
 #define NFC_NXP_MW_VERSION_MAJ (0x00) /* MW Major Version */
-#define NFC_NXP_MW_VERSION_MIN (0x15) /* MW Minor Version */
-#define NFC_NXP_MW_RC_VERSION (0x01) /* MW Minor Version */
+#define NFC_NXP_MW_VERSION_MIN (0x08) /* MW Minor Version */
+#define NFC_NXP_MW_CUSTOMER_ID (0x00) /* MW Customer Id */
+#define NFC_NXP_MW_RC_VERSION  (0x01) /* MW RC Version */
 #define NFC_EE_DISC_OP_REMOVE 1
 #endif
 /* NFC application return status codes */
@@ -134,6 +136,7 @@
 #define NFC_STATUS_BAD_HANDLE 0xFE
 /* congested                  */
 #define NFC_STATUS_CONGESTED 0xFF
+
 typedef uint8_t tNFC_STATUS;
 
 #if (NXP_EXTNS == TRUE)
@@ -179,7 +182,7 @@ typedef uint8_t tNFC_STATUS;
 #define NXP_NFC_PARAM_ID_RF_PARAM_ESE \
   ((unsigned char)0xF0) /* ESE RF parameter   */
 #define NXP_NFC_PARAM_ID_NFCC_RF_CONFIG \
-  ((unsigned char)0x9B) /* NFCC RF config parameter*/
+  ((unsigned char)0x85) /* NFCC RF config parameter*/
 #define NXP_NFC_EMVCO_PCD_COLLISION_DETECTED \
   ((unsigned char)0xE4) /* Core generic error for EMVCO collision detected */
 #define NXP_NFC_PARAM_ID_RF_PARAM_UICC2 \
@@ -524,6 +527,7 @@ typedef uint8_t tNFC_RF_TECH_N_MODE;
 
 /* Select Response codes */
 #define NFC_SEL_RES_NFC_FORUM_T2T 0x00
+#define NFC_SEL_RES_MF_CLASSIC 0x08
 
 /* Bit Rates */
 #define NFC_BIT_RATE_212 NCI_BIT_RATE_212   /* 212 kbit/s */
@@ -553,6 +557,7 @@ typedef uint8_t tNFC_DEACT_TYPE;
  *  Deactivation Reasons
  **********************************************/
 #define NFC_DEACTIVATE_REASON_DH_REQ_FAILED NCI_DEACTIVATE_REASON_DH_REQ_FAILED
+#define NFC_DEACTIVATE_REASON_DH_REQ NCI_DEACTIVATE_REASON_DH_REQ
 typedef uint8_t tNFC_DEACT_REASON;
 
 /* the data type associated with NFC_RF_FIELD_REVT */
@@ -582,6 +587,12 @@ typedef struct {
 /* Application initiation    */
 #define NFC_EE_TRIG_APP_INIT NCI_EE_TRIG_APP_INIT
 typedef uint8_t tNFC_EE_TRIGGER;
+#if(NXP_EXTNS == TRUE)
+typedef struct {
+  uint8_t len_data;                  /* len of application data  */
+  uint8_t data[NFC_MAX_APP_DATA_LEN]; /* application data    */
+} tNFC_EE_ACTION_DATA;
+#endif
 typedef struct {
   tNFC_EE_TRIGGER trigger; /* the trigger of this event        */
   union {
@@ -590,6 +601,9 @@ typedef struct {
     tNFC_AID aid;
     tNFC_APP_INIT app_init;
   } param; /* Discovery Type specific parameters */
+#if(NXP_EXTNS == TRUE)
+  tNFC_EE_ACTION_DATA nfc_act_data;
+#endif
 } tNFC_ACTION_DATA;
 
 /* the data type associated with NFC_EE_ACTION_REVT */

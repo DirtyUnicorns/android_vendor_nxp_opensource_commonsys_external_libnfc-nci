@@ -22,6 +22,7 @@ cc_library_shared {
         "libutils",
         "android.hardware.nfc@1.0",
         "android.hardware.nfc@1.1",
+        "android.hardware.nfc@1.2",
         "vendor.nxp.hardware.nfc@1.0",
         "vendor.nxp.hardware.nfc@1.1",
     ],
@@ -32,6 +33,7 @@ cc_library_shared {
         "-DBUILDCFG=1",
         "-Wall",
         "-Werror",
+        "-Wimplicit-fallthrough",
         "-DNXP_EXTNS=TRUE",
     ],
     local_include_dirs: [
@@ -40,7 +42,7 @@ cc_library_shared {
         "gki/common",
         "nfa/include",
         "nfc/include",
-    ],
+       ],
     srcs: [
         "nfa/ce/*.cc",
         "nfa/dm/*.cc",
@@ -57,9 +59,6 @@ cc_library_shared {
         "adaptation/*.cc",
         "gki/common/*.cc",
         "gki/ulinux/*.cc",
-    ],
-    include_dirs: [
-        "vendor/nxp/opensource/commonsys/external/libnfc-nci/SN100x/extns/impl/",
     ],
     product_variables: {
         debuggable: {
